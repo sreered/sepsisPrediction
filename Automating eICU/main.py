@@ -31,6 +31,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import copy
 
+#Check if time of suspiction, time of onset are appropriately calculates
 tsus=tsuspicion()
 med_in=pd.read_csv("medication.csv")
 treatment=pd.read_csv("treatment.csv")
