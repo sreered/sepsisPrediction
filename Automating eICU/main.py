@@ -34,7 +34,7 @@ import copy
 tsus=tsuspicion()
 med_in=pd.read_csv("medication.csv")
 treatment=pd.read_csv("treatment.csv")
-microlab=pd.read_csv("microlab.csv")
+microlab=pd.read_csv("microLab.csv")
 tsus_max_df=tsus.get_antibiotics(med_in,treatment,microlab)
 #It works
 #print(tsus_max_df.head())
@@ -68,36 +68,36 @@ vitals=pd.read_csv("vitalPeriodic.csv")
 merged_table=table_merger.merge_final(gcs_scores, lab_beforeSOFA, infusiondrug_withSOFA, tsus_max_df, tsepsis_table, vitals)
 merged_table.to_csv("merged_training_table.csv")
 
-del merged_table
-chunks=pd.read_csv("merged_training_table.csv", chunksize=1000000)
-#Start sepsis predictions
-sepsispred=SepsisPrediction()
+# del merged_table
+# chunks=pd.read_csv("merged_training_table.csv", chunksize=1000000)
+# #Start sepsis predictions
+# sepsispred=SepsisPrediction()
 
-#for loop to create all the necessary files, specify the time periods
+# #for loop to create all the necessary files, specify the time periods
 
-time_prior = 2
-time_duration = 6
+# time_prior = 2
+# time_duration = 6
 
-num=1
-for chunk in chunks:  
-    sepsispred.process(chunk, num, time_prior, time_duration)
-    num+=1
+# num=1
+# for chunk in chunks:  
+#     sepsispred.process(chunk, num, time_prior, time_duration)
+#     num+=1
 
-df = pd.read_csv('Sepsis'+str(time_prior)+'-'+str(time_duration)+str(1)+'.csv')
-for i in range(num):
-    df = pd.concat([df, pd.read_csv('Sepsis'+str(time_prior)+'-'+str(time_duration)+str(i+2)+'.csv')])    
-df.reset_index(drop=True, inplace=True)
+# df = pd.read_csv('Sepsis'+str(time_prior)+'-'+str(time_duration)+str(1)+'.csv')
+# for i in range(num):
+#     df = pd.concat([df, pd.read_csv('Sepsis'+str(time_prior)+'-'+str(time_duration)+str(i+2)+'.csv')])    
+# df.reset_index(drop=True, inplace=True)
 
-sepsis_df = sepsispred.case_preprocess(df)
-labels = sepsis_df['label']
-sepsis_X_train, sepsis_x_cv, sepsis_label, sepsis_y_cv = train_test_split(sepsis_df, labels, test_size=0.2, random_state=23)
+# sepsis_df = sepsispred.case_preprocess(df)
+# labels = sepsis_df['label']
+# sepsis_X_train, sepsis_x_cv, sepsis_label, sepsis_y_cv = train_test_split(sepsis_df, labels, test_size=0.2, random_state=23)
 
-controls_df = sepsispred.control_preprocess(df)
-labels = controls_df['label']
-X_train, x_cv, label, y_cv = train_test_split(controls_df, labels, test_size=0.2, random_state=23)
+# controls_df = sepsispred.control_preprocess(df)
+# labels = controls_df['label']
+# X_train, x_cv, label, y_cv = train_test_split(controls_df, labels, test_size=0.2, random_state=23)
 
-#adjust the parameters according to will
-params = {'eta': 0.1, 'max_depth': 6, 'scale_pos_weight': 1, 'objective': 'reg:linear','subsample':0.25,'verbose': False}
-xgb_model = None
+# #adjust the parameters according to will
+# params = {'eta': 0.1, 'max_depth': 6, 'scale_pos_weight': 1, 'objective': 'reg:linear','subsample':0.25,'verbose': False}
+# xgb_model = None
 
-sepsispred.run_xgboost(10, sepsis_X_train, sepsis_x_cv, sepsis_y_cv, X_train, x_cv, y_cv)
+# sepsispred.run_xgboost(10, sepsis_X_train, sepsis_x_cv, sepsis_y_cv, X_train, x_cv, y_cv)
