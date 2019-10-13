@@ -63,11 +63,11 @@ infusiondrug_withSOFA=infdrug_filtering.calc_SOFA(columnized_infusion,map_detail
 
 sepsiscalc=tsepsis()
 tsepsis_table=sepsiscalc.calc_tsepsis(lab_withSOFA, infusiondrug_withSOFA, gcs_SOFA, tsus_max_df)
-table_merger=MergeTables()
+# table_merger=MergeTables()
 
-vitals=pd.read_csv("vitalPeriodic.csv")
-merged_table=table_merger.merge_final(gcs_scores, lab_beforeSOFA, infusiondrug_withSOFA, tsus_max_df, tsepsis_table, vitals)
-merged_table.to_csv("merged_training_table.csv")
+# vitals=pd.read_csv("vitalPeriodic.csv")
+# merged_table=table_merger.merge_final(gcs_scores, lab_beforeSOFA, infusiondrug_withSOFA, tsus_max_df, tsepsis_table, vitals)
+# merged_table.to_csv("merged_training_table.csv")
 
 # del merged_table
 # chunks=pd.read_csv("merged_training_table.csv", chunksize=1000000)
