@@ -31,19 +31,20 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import copy
 
+path = "/home/argosscore/alpha.physionet.org/files/eicu-crd/2.0/"
 #Check if time of suspiction, time of onset are appropriately calculates
 tsus=tsuspicion()
-med_in=pd.read_csv("medication.csv")
-treatment=pd.read_csv("treatment.csv")
-microlab=pd.read_csv("microLab.csv")
+med_in=pd.read_csv(path+"medication.csv")
+treatment=pd.read_csv(path+"treatment.csv")
+microlab=pd.read_csv(path+"microLab.csv")
 tsus_max_df=tsus.get_antibiotics(med_in,treatment,microlab)
 #It works
 #print(tsus_max_df.head())
 
 gcs_filtering=GCS_Filter()
-nursechart=pd.read_csv("nurseCharting.csv",usecols=[1, 3, 4, 5, 7])
-lab_in=pd.read_csv("lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])
-respChart=pd.read_csv("respiratoryCharting.csv")
+nursechart=pd.read_csv(path+"nurseCharting.csv",usecols=[1, 3, 4, 5, 7])
+lab_in=pd.read_csv(path+"lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])
+respChart=pd.read_csv(path+"respiratoryCharting.csv")
 gcs_SOFA=gcs_filtering.extract_GCS_withSOFA(nursechart)
 gcs_scores=gcs_filtering.extract_GCS(nursechart)
 vent_details=gcs_filtering.extract_VENT(nursechart)
@@ -54,8 +55,8 @@ lab_beforeSOFA=lab_filtering.extract_lab_format(lab_in, respChart, vent_details)
 lab_withSOFA=lab_filtering.calc_lab_sofa(lab_beforeSOFA)
 
 infdrug_filtering=Vasopressors()
-infusionDrug=pd.read_csv("infusionDrug.csv")
-patient_data=pd.read_csv("patient.csv", usecols=['patientunitstayid', 'admissionweight', 'dischargeweight', 'unitdischargeoffset'])
+infusionDrug=pd.read_csv(path+"infusionDrug.csv")
+patient_data=pd.read_csv(path+"patient.csv", usecols=['patientunitstayid', 'admissionweight', 'dischargeweight', 'unitdischargeoffset'])
 infusionfiltered=infdrug_filtering.extract_drugrates(infusionDrug)
 normalized_infusion=infdrug_filtering.incorporate_weights(infusionfiltered, patient_data)
 columnized_infusion=infdrug_filtering.add_separate_cols(normalized_infusion)
