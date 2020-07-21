@@ -126,6 +126,8 @@ class Vasopressors:
         nursemap=nursemap[['patientunitstayid','nursingchartentryoffset','nursingchartvalue']]
         #since we need both the cardio params as well as the MAP values individually, we will use outer join
         df_cardiovascular=pd.merge(drugrate_updated,nursemap,left_on=['patientunitstayid'],right_on=['patientunitstayid'],how='outer').drop_duplicates()
+        df_cardiovascular.nursingchartvalue = df_cardiovascular.nursingchartvalue.astype(float)
+        # print(df_cardiovascular.dtypes)
         
         df_cardiovascular.loc[((df_cardiovascular['Dopamine'] >15)) | ((df_cardiovascular['Epinephrine'] >0.1)) | ((df_cardiovascular['Norepinephrine'] >0.1)), 'SOFA_cardio'] = 4
         df_cardiovascular.loc[((df_cardiovascular['Dopamine'] <15)) | ((df_cardiovascular['Epinephrine'] <=0.1)) | ((df_cardiovascular['Norepinephrine'] <=0.1)), 'SOFA_cardio'] = 3

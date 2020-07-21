@@ -30,7 +30,7 @@ class tsepsis:
 
         #Calculating the Total SOFA score, difference between scores and the cumulative time, from admission
 
-        final_sofa=final_sofa.groupby(['patientunitstayid','offset'],as_index=False).max().drop_duplicates
+        final_sofa=final_sofa.groupby(['patientunitstayid','offset'],as_index=False).max().drop_duplicates()
         final_sofa=final_sofa.groupby(['patientunitstayid'],as_index=False).apply(pd.DataFrame.sort_values,'offset').reset_index()
         final_sofa=final_sofa.drop(columns=['level_0','level_1'])
         final_sofa['Total_SOFA']=final_sofa['SOFA_Coagulation']+final_sofa['SOFA_Liver']+final_sofa['SOFA_Respiration']+final_sofa['SOFA_Renal']+final_sofa['SOFA_cardio']+final_sofa['SOFA_GCS']
@@ -48,17 +48,21 @@ class tsepsis:
         for_24_hr=final_sofa.loc[(final_sofa['diff_per_SOFA']>=2) & (final_sofa['cumulative_time']<=(24*60))]
 
         #Clubbing the t_suspicion table with filtered SOFA table
-        t_sus=t_sus.rename(columns={'max':'tsus'})
+        t_sus=t_sus.rename(columns={'diagnosisoffset':'tsus'})
 
         for_24_hr_tsofa=for_24_hr.groupby(['patientunitstayid']).agg({'offset':'min'}).reset_index()
         for_24_hr_tsofa=for_24_hr_tsofa.rename(columns={'offset':'tsofa'})
-        for_24_hr_tsepsis=pd.merge(for_24_hr_tsofa,t_sus,on='patientunitstayid',how='inner').drop_duplicates()
-        
+        # for_24_hr_tsepsis=pd.merge(for_24_hr_tsofa,t_sus,on='patientunitstayid',how='inner').drop_duplicates()
+        for_24_hr_tsepsis=pd.merge(for_24_hr_tsofa,t_sus,on='patientunitstayid',how='inner')
+
         #flag==1 stands for cases, where as 0 for control.
         #Then we calculate the t_sepsis_onset time based on the required constraints
 
         for_24_hr_tsepsis['flag']=0
         for_24_hr_tsepsis.loc[(for_24_hr_tsepsis['tsofa']>=(for_24_hr_tsepsis['tsus']-(24*60))) & (for_24_hr_tsepsis['tsofa']<=(for_24_hr_tsepsis['tsus']+(12*60))),'flag']=1
+        for_24_hr_tsepsis = for_24_hr_tsepsis[for_24_hr_tsepsis.flag==1]
+        for_24_hr_tsepsis['tsepsis']=for_24_hr_tsepsis[['tsus','tsofa']].min(axis=1)
+        for_24_hr_tsepsis = for_24_hr_tsepsis.groupby(["patientunitstayid"]).head(1)
         for_24_hr_tsepsis.to_csv("24_hour_sepsis.csv",index=False)
         
         #This following is to bring out the number of cases and the actual tsepsis, and not just flag them
