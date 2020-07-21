@@ -44,10 +44,10 @@ tsus_max_df = pd.read_csv("icd_sepsis_diagnosis.csv")
 # print(tsus_max_df)
 
 gcs_filtering=GCS_Filter()
-nursechart=pd.read_csv(path+"nurseCharting.csv",usecols=[1, 3, 4, 5, 7])[0:10000]
+nursechart=pd.read_csv(path+"nurseCharting.csv",usecols=[1, 3, 4, 5, 7])
 
-lab_in=pd.read_csv(path+"lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])[0:10000]
-respChart=pd.read_csv(path+"respiratoryCharting.csv")[0:10000]
+lab_in=pd.read_csv(path+"lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])
+respChart=pd.read_csv(path+"respiratoryCharting.csv")
 gcs_SOFA=gcs_filtering.extract_GCS_withSOFA(nursechart)
 gcs_scores=gcs_filtering.extract_GCS(nursechart)
 vent_details=gcs_filtering.extract_VENT(nursechart)
@@ -58,7 +58,7 @@ lab_beforeSOFA=lab_filtering.extract_lab_format(lab_in, respChart, vent_details)
 lab_withSOFA=lab_filtering.calc_lab_sofa(lab_beforeSOFA)
 
 infdrug_filtering=Vasopressors()
-infusionDrug=pd.read_csv(path+"infusionDrug.csv")[0:10000]
+infusionDrug=pd.read_csv(path+"infusionDrug.csv")
 patient_data=pd.read_csv(path+"patient.csv", usecols=['patientunitstayid', 'admissionweight', 'dischargeweight', 'unitdischargeoffset'])
 infusionfiltered=infdrug_filtering.extract_drugrates(infusionDrug)
 normalized_infusion=infdrug_filtering.incorporate_weights(infusionfiltered, patient_data)
