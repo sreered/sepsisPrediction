@@ -31,8 +31,8 @@ import datetime
 # from sklearn.ensemble import GradientBoostingClassifier
 import copy
 
-path = "/Users/sree_personal/Documents/physionet.org/files/eicu-crd-demo/2.0/"
-# path = "/home/argosscore/alpha.physionet.org/files/eicu-crd/2.0/"
+# path = "/Users/sree_personal/Documents/physionet.org/files/eicu-crd-demo/2.0/"
+path = "/home/argosscore/alpha.physionet.org/files/eicu-crd/2.0/"
 #Check if time of suspiction, time of onset are appropriately calculates
 # ----------------
 # tsus=tsuspicion()
@@ -44,10 +44,10 @@ tsus_max_df = pd.read_csv("icd_sepsis_diagnosis.csv")
 # print(tsus_max_df)
 
 gcs_filtering=GCS_Filter()
-nursechart=pd.read_csv(path+"nurseCharting.csv",usecols=[1, 3, 4, 5, 7])[0:100000]
+nursechart=pd.read_csv(path+"nurseCharting.csv",usecols=[1, 3, 4, 5, 7])[0:10000]
 
-lab_in=pd.read_csv(path+"lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])[0:100000]
-respChart=pd.read_csv(path+"respiratoryCharting.csv")[0:100000]
+lab_in=pd.read_csv(path+"lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])[0:10000]
+respChart=pd.read_csv(path+"respiratoryCharting.csv")[0:10000]
 gcs_SOFA=gcs_filtering.extract_GCS_withSOFA(nursechart)
 gcs_scores=gcs_filtering.extract_GCS(nursechart)
 vent_details=gcs_filtering.extract_VENT(nursechart)
@@ -58,7 +58,7 @@ lab_beforeSOFA=lab_filtering.extract_lab_format(lab_in, respChart, vent_details)
 lab_withSOFA=lab_filtering.calc_lab_sofa(lab_beforeSOFA)
 
 infdrug_filtering=Vasopressors()
-infusionDrug=pd.read_csv(path+"infusionDrug.csv")[0:100000]
+infusionDrug=pd.read_csv(path+"infusionDrug.csv")[0:10000]
 patient_data=pd.read_csv(path+"patient.csv", usecols=['patientunitstayid', 'admissionweight', 'dischargeweight', 'unitdischargeoffset'])
 infusionfiltered=infdrug_filtering.extract_drugrates(infusionDrug)
 normalized_infusion=infdrug_filtering.incorporate_weights(infusionfiltered, patient_data)
