@@ -45,7 +45,8 @@ class tsepsis:
         final_sofa['cumulative_time']=final_sofa.groupby(['patientunitstayid'])['diff_per_offset'].transform(lambda x:x.cumsum())
 
         #Filtering the SOFA table based on the (score diff >= 2 and cumulative time <= 24 hours)
-        for_24_hr=final_sofa.loc[(final_sofa['diff_per_SOFA']>=2) & (final_sofa['cumulative_time']<=(24*60))]
+        # for_24_hr=final_sofa.loc[(final_sofa['diff_per_SOFA']>=2) & (final_sofa['cumulative_time']<=(24*60))]
+        for_24_hr=final_sofa.loc[(final_sofa['diff_per_SOFA']>=2) & (final_sofa['cumulative_time']<=(24))]
 
         #Clubbing the t_suspicion table with filtered SOFA table
         t_sus=t_sus.rename(columns={'diagnosisoffset':'tsus'})
@@ -59,7 +60,8 @@ class tsepsis:
         #Then we calculate the t_sepsis_onset time based on the required constraints
 
         for_24_hr_tsepsis['flag']=0
-        for_24_hr_tsepsis.loc[(for_24_hr_tsepsis['tsofa']>=(for_24_hr_tsepsis['tsus']-(24*60))) & (for_24_hr_tsepsis['tsofa']<=(for_24_hr_tsepsis['tsus']+(12*60))),'flag']=1
+        # for_24_hr_tsepsis.loc[(for_24_hr_tsepsis['tsofa']>=(for_24_hr_tsepsis['tsus']-(24*60))) & (for_24_hr_tsepsis['tsofa']<=(for_24_hr_tsepsis['tsus']+(12*60))),'flag']=1
+        for_24_hr_tsepsis.loc[(for_24_hr_tsepsis['tsofa']>=(for_24_hr_tsepsis['tsus']-(24))) & (for_24_hr_tsepsis['tsofa']<=(for_24_hr_tsepsis['tsus']+(12))),'flag']=1
         for_24_hr_tsepsis = for_24_hr_tsepsis[for_24_hr_tsepsis.flag==1]
         for_24_hr_tsepsis['tsepsis']=for_24_hr_tsepsis[['tsus','tsofa']].min(axis=1)
         for_24_hr_tsepsis = for_24_hr_tsepsis.groupby(["patientunitstayid"]).head(1)

@@ -41,13 +41,28 @@ path = "/Users/sree_personal/Documents/physionet.org/files/eicu-crd-demo/2.0/"
 # microlab=pd.read_csv(path+"microLab.csv")
 # tsus_max_df=tsus.get_antibiotics(med_in)
 tsus_max_df = pd.read_csv("icd_sepsis_diagnosis.csv")
+tsus_max_df["diagnosisoffset"] = tsus_max_df["diagnosisoffset"]//60
+# print("tsus_max_df")
 # print(tsus_max_df)
 
 gcs_filtering=GCS_Filter()
-nursechart=pd.read_csv(path+"nurseCharting.csv",usecols=[1, 3, 4, 5, 7])[0:100000]
+nursechart=pd.read_csv(path+"nurseCharting.csv",usecols=[1, 3, 4, 5, 7])
+nursechart["nursingchartentryoffset"] = nursechart["nursingchartentryoffset"]//60
+# print("nursechart")
+# print(nursechart)
 
-lab_in=pd.read_csv(path+"lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])[0:100000]
-respChart=pd.read_csv(path+"respiratoryCharting.csv")[0:100000]
+lab_in=pd.read_csv(path+"lab.csv",usecols=[1, 2, 4, 5, 7, 8, 9])
+lab_in["labresultoffset"] = lab_in["labresultoffset"]//60
+lab_in["labresultrevisedoffset"] = lab_in["labresultrevisedoffset"]//60
+# print("lab_in")
+# print(lab_in)
+
+respChart=pd.read_csv(path+"respiratoryCharting.csv")
+respChart["respchartoffset"] = respChart["respchartoffset"]//60
+respChart["respchartentryoffset"] = respChart["respchartentryoffset"]//60
+# print("respChart")
+# print(respChart)
+
 gcs_SOFA=gcs_filtering.extract_GCS_withSOFA(nursechart)
 gcs_scores=gcs_filtering.extract_GCS(nursechart)
 vent_details=gcs_filtering.extract_VENT(nursechart)
@@ -58,8 +73,16 @@ lab_beforeSOFA=lab_filtering.extract_lab_format(lab_in, respChart, vent_details)
 lab_withSOFA=lab_filtering.calc_lab_sofa(lab_beforeSOFA)
 
 infdrug_filtering=Vasopressors()
-infusionDrug=pd.read_csv(path+"infusionDrug.csv")[0:100000]
+infusionDrug=pd.read_csv(path+"infusionDrug.csv")
+infusionDrug["infusionoffset"] = infusionDrug["infusionoffset"]//60
+# print("infusionDrug")
+# print(infusionDrug)
+
 patient_data=pd.read_csv(path+"patient.csv", usecols=['patientunitstayid', 'admissionweight', 'dischargeweight', 'unitdischargeoffset'])
+patient_data["unitdischargeoffset"] = patient_data["unitdischargeoffset"]//60
+# print("patient_data")
+# print(patient_data)
+
 infusionfiltered=infdrug_filtering.extract_drugrates(infusionDrug)
 normalized_infusion=infdrug_filtering.incorporate_weights(infusionfiltered, patient_data)
 columnized_infusion=infdrug_filtering.add_separate_cols(normalized_infusion)

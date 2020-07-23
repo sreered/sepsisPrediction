@@ -83,6 +83,7 @@ class Lab_Filter:
         del pre_final_lab['labresult']
         del pre_final_lab['labname']
 
+        pre_final_lab = pre_final_lab.groupby(['patientunitstayid', 'labresultoffset']).mean().reset_index()
         pre_final_lab.to_csv("labs_morevars.csv", sep=',', index=False, encoding='utf-8')
 
 
